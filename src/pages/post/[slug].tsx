@@ -1,8 +1,9 @@
 import Header from "components/Header";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
-import { FC } from "react";
-import { sanityClient } from "sanity";
+import { Children, FC } from "react";
+import PortableText from "react-portable-text";
+import { sanityClient, urlFor } from "sanity";
 import { Post } from "typings";
 
 interface Props {
@@ -16,7 +17,52 @@ const MyPost: FC<Props> = ({ post }) => {
       <Head>
         <title>{post.title}</title>
       </Head>
-      {post.title}
+      <img
+        className="h-60 w-full object-cover"
+        src={urlFor(post.mainImage).url()!}
+        alt={post.title}
+      />
+      <article className="max-w-3xl mx-auto px-5">
+        <h1 className="text-3xl mt-10 mb-3">{post.title}</h1>
+        <h2 className="text-xl font-light text-gray-500">{post.description}</h2>
+
+        <div className="flex items-center space-x-2">
+          <img
+            className="h-10 w-10 object-cover rounded-full"
+            src={urlFor(post.author.image).url()!}
+            alt={post.author.name}
+          />
+          <p className="font-extralight text-sm">
+            Blog post by{" "}
+            <span className="text-green-600">{post.author.name}</span> at{" "}
+            {new Date(post._createdAt).toLocaleString()}
+          </p>
+        </div>
+
+        <div className="mt-10">
+          <PortableText
+            dataset={process.env.NEXT_PUBLIC_SANITY_DATASET}
+            projectId={process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}
+            content={post.body}
+            serializers={{
+              h1: (props: any) => (
+                <h1 className="text-2xl font-bold my-5" {...props} />
+              ),
+              h2: (props: any) => (
+                <h2 className="text-xl font-bold my-5" {...props} />
+              ),
+              li: ({ children }: any) => (
+                <li className="ml-4 list-disc">{children}</li>
+              ),
+              link: ({ href, children }: any) => (
+                <a href={href} className="text-blue-500 hover:underline">
+                  {children}
+                </a>
+              ),
+            }}
+          />
+        </div>
+      </article>
     </main>
   );
 };
@@ -49,6 +95,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const query = `*[_type == 'post' && slug.current == $slug][0]{
     _id,
+    _createdAt,
     title,
     slug,
     description,
@@ -71,5 +118,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
     props: {
       post: post,
     },
+    revalidate: 60, // after 60 seconds, it'll update the old cached version
   };
 };

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Link from "next/link";
-import { Post } from "typings";
-import { urlFor } from "sanity";
+import { Post } from "../typings";
+import { urlFor } from "../sanity";
 
 interface Props {
   post: Post;
@@ -9,7 +9,7 @@ interface Props {
 
 const PostDisplay: FC<Props> = ({ post }) => {
   return (
-    <Link href={`/post/${post.slug.current}`}>
+    <Link key={post._id} href={`/post/${post.slug.current}`}>
       <div className="group cursor-pointer border rounded-lg overflow-hidden">
         <img
           className="h-60 w-full object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"

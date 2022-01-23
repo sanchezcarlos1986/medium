@@ -10,6 +10,7 @@ interface Props {
 }
 
 const Home: FC<Props> = ({ posts }) => {
+  console.log("posts:", posts);
   return (
     <div className="max-w-7xl mx-auto">
       <Header />

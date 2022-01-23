@@ -6,6 +6,7 @@
     "start": "next start",
     "test:unit": "jest",
     "test:watch": "jest --watch",
+    "branch-naming-check": "branch-naming-check \"^(master|develop)|(feature|bugfix|refactor|ci|hotfix|jira|issue|renovate)/[a-zA-Z0-9._-]+$\"",
     "pre-commit": "npm run branch-naming-check && lint-staged"
   },
   "lint-staged": {
